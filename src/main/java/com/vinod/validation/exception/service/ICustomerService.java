@@ -1,6 +1,8 @@
 package com.vinod.validation.exception.service;
 
 
+import com.vinod.validation.exception.exception.CustomerAlreadyExistException;
+import com.vinod.validation.exception.exception.CustomerNotFoundException;
 import com.vinod.validation.exception.model.Customer;
 
 public interface ICustomerService {
@@ -11,7 +13,7 @@ public interface ICustomerService {
      * @param customer  - Customer object.
      * @return          - Persisted customer object.
      */
-    Customer addCustomer(Customer customer);
+    Customer addCustomer(Customer customer) throws CustomerAlreadyExistException;
 
     /**
      * Get customer object by customer id.
@@ -19,7 +21,7 @@ public interface ICustomerService {
      * @param id    - Customer ID.
      * @return      - Customer object.
      */
-    Customer getCustomerById(Long id);
+    Customer getCustomerById(Long id) throws CustomerNotFoundException;
 
     /**
      * Get customer object by email id.
@@ -27,7 +29,7 @@ public interface ICustomerService {
      * @param emailId    - Customer Email ID.
      * @return      - Customer object.
      */
-    Customer getCustomerByEmailId(String emailId);
+    Customer getCustomerByEmailId(String emailId) throws CustomerNotFoundException;
 
     /**
      * Update customer object by new value having id as given.
@@ -36,13 +38,13 @@ public interface ICustomerService {
      * @param customer  - Customer Object.
      * @return          - Newly persisted customer object.
      */
-    Customer updateCustomer(Long id,Customer customer);
+    Customer updateCustomer(Long id,Customer customer) throws CustomerNotFoundException;
 
     /**
      * Delete customer object having particular id.
      *
      * @param id    - Customer ID.
      */
-    void deleteCustomer(Long id);
+    void deleteCustomer(Long id) throws CustomerNotFoundException;
 
 }
