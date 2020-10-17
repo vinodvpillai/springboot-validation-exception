@@ -34,13 +34,13 @@ public class GlobalUtility {
      * Response for Failed.
      *
      * @param statusCode
-     * @param errorCode
-     * @param errorMessage
-     * @param errorData
+     * @param errorStatus
+     * @param errorReason
+     * @param errorCause
      * @return
      */
-    public static ResponseEntity<Response> buildResponseForError(final int statusCode, final String errorCode,final String errorMessage, final Object errorData) {
-        Response apiResponse = Response.builder().status(statusCode).errorCode(errorCode).errorMessage(errorMessage).errorData(errorData).build();
+    public static ResponseEntity<Response> buildResponseForError(final int statusCode, final String errorStatus,final String errorReason, final Object errorCause) {
+        Response apiResponse = Response.builder().status(statusCode).errorStatus(errorStatus).errorReason(errorReason).errorCause(errorCause).build();
         return ResponseEntity.status(statusCode).body(apiResponse);
     }
 

@@ -15,7 +15,7 @@ public class Response {
     private int status;
     private String message;
     private Object data;
-    private String errorCode;
-    private String errorMessage;
-    private Object errorData;
+    private String errorStatus;
+    private String errorReason;
+    private Object errorCause;
 }
