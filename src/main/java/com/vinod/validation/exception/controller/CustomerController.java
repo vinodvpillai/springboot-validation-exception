@@ -1,15 +1,20 @@
 package com.vinod.validation.exception.controller;
 
 import com.vinod.validation.exception.exception.CustomerAlreadyExistException;
+import com.vinod.validation.exception.exception.CustomerNameNotFoundException;
 import com.vinod.validation.exception.exception.CustomerNotFoundException;
 import com.vinod.validation.exception.model.Customer;
 import com.vinod.validation.exception.service.ICustomerService;
 import com.vinod.validation.exception.util.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 import static com.vinod.validation.exception.util.GlobalUtility.buildResponseForError;
 import static com.vinod.validation.exception.util.GlobalUtility.buildResponseForSuccess;
@@ -18,12 +23,13 @@ import static com.vinod.validation.exception.util.GlobalUtility.buildResponseFor
 @RestController
 @RequestMapping("/customers")
 @Slf4j
+@Validated
 public class CustomerController {
     @Autowired
     private ICustomerService customerService;
 
     @PostMapping
-    public ResponseEntity<Response> addNewCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<Response> addNewCustomer(@Valid @RequestBody Customer customer) {
         try {
             log.trace("Request came to add new customer with following details: {}", customer);
             Customer persistedCustomer = customerService.addCustomer(customer);
@@ -49,21 +55,6 @@ public class CustomerController {
             return buildResponseForError(HttpStatus.SC_BAD_REQUEST, String.valueOf(HttpStatus.SC_NOT_FOUND), e.getMessage(), null);
         } catch (Exception e) {
             log.error("Unable to get the customer details for id: {}, error msg: {}", id, e.getMessage(), e);
-            return buildResponseForError(HttpStatus.SC_INTERNAL_SERVER_ERROR, String.valueOf(HttpStatus.SC_INTERNAL_SERVER_ERROR), "Oops! Something went wrong.", null);
-        }
-    }
-
-    @GetMapping("/byEmailId/{id}")
-    public ResponseEntity<Response> getCustomerMyEmailId(@PathVariable("id") String emailId) {
-        try {
-            log.trace("Request came to get the customer details having the email id: {}", emailId);
-            Customer customer = customerService.getCustomerByEmailId(emailId);
-            return buildResponseForSuccess(HttpStatus.SC_OK, "Successfully fetched customer", customer);
-        } catch (CustomerNotFoundException e) {
-            log.warn("Unable to get the customer details for email id: {}, error msg: {}", emailId, e.getMessage(), e);
-            return buildResponseForError(HttpStatus.SC_BAD_REQUEST, String.valueOf(HttpStatus.SC_NOT_FOUND), e.getMessage(), null);
-        } catch (Exception e) {
-            log.error("Unable to get the customer details for email id: {}, error msg: {}", emailId, e.getMessage(), e);
             return buildResponseForError(HttpStatus.SC_INTERNAL_SERVER_ERROR, String.valueOf(HttpStatus.SC_INTERNAL_SERVER_ERROR), "Oops! Something went wrong.", null);
         }
     }
@@ -96,6 +87,26 @@ public class CustomerController {
             log.error("Unable to delete the customer for id: {}, error msg: {}", id, e.getMessage(), e);
             return buildResponseForError(HttpStatus.SC_INTERNAL_SERVER_ERROR, String.valueOf(HttpStatus.SC_INTERNAL_SERVER_ERROR), "Oops! Something went wrong.", null);
         }
+    }
+
+    /**
+     * Get customer details by Email ID.
+     *
+     * Exception handling using the - Global exception handling.
+     *
+     * @param emailId
+     * @return
+     * @throws CustomerNameNotFoundException
+     */
+
+    @GetMapping("/byEmailId")
+    public ResponseEntity<Response> getCustomerMyEmailId(@RequestParam("id") @Length(min = 5, max = 30) String emailId) throws CustomerNameNotFoundException {
+        log.trace("Request came to get the customer details having the email id: {}", emailId);
+        Customer customer = customerService.getCustomerByEmailId(emailId);
+        if(null==customer) {
+            throw new CustomerNameNotFoundException("No customer found for the given email id.");
+        }
+        return buildResponseForSuccess(HttpStatus.SC_OK, "Successfully fetched customer", customer);
     }
 
 }

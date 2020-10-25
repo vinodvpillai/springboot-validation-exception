@@ -61,15 +61,15 @@ public class CustomerServiceImpl implements ICustomerService {
      * @return      - Customer object.
      */
     @Override
-    public Customer getCustomerByEmailId(String emailId) throws CustomerNotFoundException {
+    public Customer getCustomerByEmailId(String emailId)  {
         log.trace("Request came to fetch the customer having customer email id : {}",emailId);
         Optional<Customer> optionalCustomer=customerRepository.findByEmailId(emailId);
-        if(!optionalCustomer.isPresent()){
-            throw new CustomerNotFoundException("No customer found for the given email id.");
+        if(optionalCustomer.isPresent()){
+            Customer customer=optionalCustomer.get();
+            log.trace("Successfully fetched customer object : {} having customer email id: {}",customer,emailId);
+            return customer;
         }
-        Customer customer=optionalCustomer.get();
-        log.trace("Successfully fetched customer object : {} having customer email id: {}",customer,emailId);
-        return customer;
+        return null;
     }
 
     /**

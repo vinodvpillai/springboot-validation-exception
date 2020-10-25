@@ -29,7 +29,7 @@ public interface ICustomerService {
      * @param emailId    - Customer Email ID.
      * @return      - Customer object.
      */
-    Customer getCustomerByEmailId(String emailId) throws CustomerNotFoundException;
+    Customer getCustomerByEmailId(String emailId);
 
     /**
      * Update customer object by new value having id as given.
